@@ -4,12 +4,14 @@ var main = function(){
 
     var grid, count, n, inPlay, com, pla;
 
+    $("#gear").hide();
+    $("#text").hide();
+
     $("#btn-player").click(function(){
         com = 'O';
         pla = 'X';
         init();
         $("#text").show();
-        $("#gear").hide();
         $(".btn").hide();
     })
 
@@ -17,7 +19,6 @@ var main = function(){
         com = 'X';
         pla = 'O';
         init();
-        $("#text").hide();
         $(".btn").hide();
         inPlay = false;
         place(initial());
@@ -186,35 +187,23 @@ var main = function(){
         endGame();
     }
 
-    var rotate = function(){
-        var angle = 0;
-        var intervalID = setInterval(function() {
-            angle +=15;
-            if (angle==300) clearInterval(intervalID);
-            $("#gear").css("-webkit-transform", "rotate("+angle+"deg");
-            $("#gear").css("-moz-transform", "rotate("+angle+"deg");
-            $("#gear").css("-o-transform", "rotate("+angle+"deg");
-            $("#gear").css("transform", "rotate("+angle+"deg");
-        }, 50);
-    }
-
     var calc = function(i,j){
         var points = 0, countP = 0, countC = 0, p = 0;
 
         p = hor(i,j);
-        if (p==6) { win(i,j,"hor")}
+        if (p==6) { win(i,j,"hor"); return p}
         points += p;
 
         p = ver(i,j);
-        if (p==6) { win(i, j,"ver")}
+        if (p==6) { win(i, j,"ver"); return p}
         points +=p;
 
         p = diag(i,j);
-        if (p==6) { win(i,j,"diag")}
+        if (p==6) { win(i,j,"diag"); return p}
         points +=p;
 
         p = rdiag(i,j);
-        if (p==6) { win(i,j,"rdiag")}
+        if (p==6) { win(i,j,"rdiag"); return p}
         points +=p;
 
         return points;
@@ -237,7 +226,6 @@ var main = function(){
     
     var place = function(pos){
         $("#gear").show();
-        rotate();
         inPlay = false;
         setTimeout(function(){
             var cur = $("#" + pos);
