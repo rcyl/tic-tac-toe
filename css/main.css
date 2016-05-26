@@ -1,5 +1,5 @@
 
-body{
+body a{
     font-family: Roboto Slab, sans-serif;
 }
 
@@ -15,15 +15,11 @@ table td, table th {
 }
 
 table td{
-    width: 150px;
-    height: 150px;
+    width: 175px;
+    height: 175px;
     text-align: center;
 }
 
-button{
-   width: 150px;
-   height: 50px;
-}
 
 .overlay{
     position: absolute;
@@ -36,7 +32,8 @@ button{
 }
 
 .btn{
-    margin: 0 55px;
+    width: 30%;
+    margin: 0 5%;
     font-family: Roboto Slab, sans-serif;
 }
 

@@ -11,15 +11,17 @@ var main = function(){
         com = 'O';
         pla = 'X';
         init();
-        $("#text").show();
-        $(".btn").hide();
+        $("#text").fadeIn();
+        //$(".btn").hide();
+        $(".btn").fadeOut();
     })
 
     $("#btn-com").click(function(){
         com = 'X';
         pla = 'O';
         init();
-        $(".btn").hide();
+        //$(".btn").hide();
+        $(".btn").fadeOut();
         inPlay = false;
         place(initial(4));
     })
@@ -29,7 +31,7 @@ var main = function(){
         if (inPlay && grid[Math.floor(id/n)][id%n] == ''){
             var cur = $(this);
             fill(cur);
-            $("#text").hide();
+            $("#text").fadeOut();
             grid[Math.floor(id/n)][id%n] = pla;
             count++;
             
@@ -201,12 +203,12 @@ var main = function(){
 
     var endGame = function(){
         inPlay = false;
-        $(".btn").show();
+        $(".btn").fadeIn();
     }
 
     var draw = function(){
         $("#text").html("Nobody wins.");
-        $("#text").show();
+        $("#text").fadeIn();
         endGame();
     }
 
@@ -241,14 +243,14 @@ var main = function(){
                 case "diag": markDiag(i,j); break;
                 case "rdiag": markRdiag(i,j); break;
             }
-            $("#gear").hide();
+            $("#gear").fadeOut();
             $("#text").html("I win.");
             endGame();
         },1001);
     }
     
     var place = function(pos){
-        $("#gear").show();
+        $("#gear").fadeIn();
         inPlay = false;
         setTimeout(function(){
             var cur = $("#" + pos);
@@ -256,8 +258,8 @@ var main = function(){
             cur.text(com);
             cur.css("color", "black");
             cur.unbind('mouseover', mouseOver).unbind('mouseout', mouseOut);
-            $("#gear").hide();
-            $("#text").show();
+            $("#gear").fadeOut();
+            $("#text").fadeIn();
             inPlay = true;
         }, 1000);
         count++;
