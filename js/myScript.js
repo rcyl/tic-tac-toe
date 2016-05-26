@@ -21,7 +21,7 @@ var main = function(){
         init();
         $(".btn").hide();
         inPlay = false;
-        place(initial());
+        place(initial(4));
     })
 
     $("td").click(function(){
@@ -39,7 +39,7 @@ var main = function(){
             }
             var pos = -1;
             if (count >2 ) pos = traverse(id);
-            else pos = initial();
+            else pos = initial(id);
 
             if (inPlay) place(pos);
 
@@ -85,20 +85,31 @@ var main = function(){
         $("#text").html("Your turn, human.");
     }
 
-    var initial = function(){
-        if (grid[1][1] == '') return n+1;
+    var initial = function(id){
+
+        var i = Math.floor(id/n);
+        var j = id%n;
+        if (grid[1][1]=='') return n+1;
+        if (checkCorner(i,j)) return (n-1-i)*n+(n-1-j); //return opposite corner
         if (grid[0][0] == '') return 0;
         if (grid[0][n-1] == '') return n-1;
         if (grid[n-1][0] == '') return (n-1)*n;
-        return (n-1)*n+(n-1);
+        return (n-1)(n+1);
     }
 
-    var points = function(countC, countP){
+    var checkCorner = function(i, j){
+        if (i==1 && j==1) return false;
+        if (i==j) return true;
+        if (i+j==n-1) return true;
+    }
+
+    var points = function(countC, countP, s, d){
 
         if (countC == 2 && countP == 0) return 6; //win
         if (countC == 0 && countP == 2) return 5; //block
-        if (countC == 1 && countP == 0) return 2; //fork
-        //if (countC == 0 && countP == 1) return 1; //block fork
+        if (countC == 1) return 2; //chance to win
+        if (d) return 3; //diagonal adjacent 
+        if (s) return 1; //straight adjacent
         return 0; 
     }
 
@@ -135,41 +146,53 @@ var main = function(){
 
 
     var hor = function(i,j){
-        var countC = 0; countP = 0;
+        var countC = 0; countP = 0, s = false;
         for(var k=0;k<n;k++) {
             if (grid[i][k]==com) countC++;
-            else if (grid[i][k]==pla) countP++;
+            else if (grid[i][k]==pla) {
+                countP++;
+                if (Math.abs(k-j)==1) s = true;
+            }
         }
-        return points(countC, countP);
+        return points(countC, countP, s, false);
     }
 
     var ver = function(i, j){
-        var countC = 0; countP = 0;
+        var countC = 0; countP = 0, s = false;
         for(var k=0;k<n;k++) {
             if (grid[k][j]==com) countC++;
-            else if (grid[k][j]==pla) countP++;
+            else if (grid[k][j]==pla) {
+                countP++;
+                if (Math.abs(k-i)==1) s = true;
+            }
         }
-        return points(countC, countP); 
+        return points(countC, countP, s, false); 
     }
 
     var diag = function(i, j){
         if (i!=j) return 0;
-        var countC = 0; countP = 0;
+        var countC = 0; countP = 0, d = false;
         for(var k=0;k<n;k++) {
             if (grid[k][k]==com) countC++;
-            else if (grid[k][k]==pla) countP++;
+            else if (grid[k][k]==pla) {
+                countP++;
+                if (Math.abs(k-i)==1) d = true;
+            }
         }
-        return points(countC, countP);
+        return points(countC, countP, false, d);
     }
 
     var rdiag = function(i, j){
         if (i+j!=n-1) return 0;
-        var countC = 0; countP = 0; 
+        var countC = 0; countP = 0, d = false; 
         for(var k=0;k<n;k++) {
             if (grid[k][n-1-k]==com) countC++;
-            else if (grid[k][n-1-k]==pla) countP++;
+            else if (grid[k][n-1-k]==pla) {
+                countP++;
+                if (Math.abs(k-i)==1) d = true;
+            }
         }
-        return points(countC, countP);
+        return points(countC, countP, false, d);
     }
 
     var mark = function(id){
