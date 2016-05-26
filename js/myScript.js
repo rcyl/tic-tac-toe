@@ -12,7 +12,6 @@ var main = function(){
         pla = 'X';
         init();
         $("#text").fadeIn();
-        //$(".btn").hide();
         $(".btn").fadeOut();
     })
 
@@ -20,7 +19,7 @@ var main = function(){
         com = 'X';
         pla = 'O';
         init();
-        //$(".btn").hide();
+        $("#text").hide();
         $(".btn").fadeOut();
         inPlay = false;
         place(initial(4));
@@ -31,7 +30,7 @@ var main = function(){
         if (inPlay && grid[Math.floor(id/n)][id%n] == ''){
             var cur = $(this);
             fill(cur);
-            $("#text").fadeOut();
+            //$("#text").fadeOut();
             grid[Math.floor(id/n)][id%n] = pla;
             count++;
             
@@ -39,6 +38,8 @@ var main = function(){
                 draw();
                 return;
             }
+             $("#text").fadeOut();
+
             var pos = -1;
             if (count >2 ) pos = traverse(id);
             else pos = initial(id);
@@ -46,8 +47,7 @@ var main = function(){
             if (inPlay) place(pos);
 
             if (count==n*n){
-                setTimeout(function()
-                           { draw(); }, 1000)
+                draw();
                 return;
             } 
         }
@@ -83,7 +83,6 @@ var main = function(){
         $("td").text("");
         $("td").bind('mouseover', mouseOver).bind('mouseout', mouseOut);
         $("td").css("color", "black");
-        $("#text").hide();
         $("#text").html("Your turn, human.");
     }
 
@@ -107,8 +106,8 @@ var main = function(){
 
     var points = function(countC, countP, s, d){
 
-        if (countC == 2 && countP == 0) return 6; //win
-        if (countC == 0 && countP == 2) return 5; //block
+        if (countC == 2 && countP == 0) return 9; //win
+        if (countC == 0 && countP == 2) return 8; //block
         if (countC == 1) return 2; //chance to win
         if (d) return 3; //diagonal adjacent 
         if (s) return 1; //straight adjacent
@@ -120,7 +119,7 @@ var main = function(){
         for(var i=0;i<n;i++){
             for(var j=0;j<n;j++){
                 if (grid[i][j] !== '') { continue; }
-                points = calc(i,j); 
+                points = calc(i,j);
                 if (points > max) {
                     max = points;
                     index = i*n+j;
@@ -216,19 +215,19 @@ var main = function(){
         var points = 0, countP = 0, countC = 0, p = 0;
 
         p = hor(i,j);
-        if (p==6) { win(i,j,"hor"); return p}
+        if (p==9) { win(i,j,"hor"); return p}
         points += p;
 
         p = ver(i,j);
-        if (p==6) { win(i, j,"ver"); return p}
+        if (p==9) { win(i, j,"ver"); return p}
         points +=p;
 
         p = diag(i,j);
-        if (p==6) { win(i,j,"diag"); return p}
+        if (p==9) { win(i,j,"diag"); return p}
         points +=p;
 
         p = rdiag(i,j);
-        if (p==6) { win(i,j,"rdiag"); return p}
+        if (p==9) { win(i,j,"rdiag"); return p}
         points +=p;
 
         return points;
