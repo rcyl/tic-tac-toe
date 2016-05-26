@@ -30,7 +30,6 @@ var main = function(){
         if (inPlay && grid[Math.floor(id/n)][id%n] == ''){
             var cur = $(this);
             fill(cur);
-            //$("#text").fadeOut();
             grid[Math.floor(id/n)][id%n] = pla;
             count++;
             
@@ -47,7 +46,7 @@ var main = function(){
             if (inPlay) place(pos);
 
             if (count==n*n){
-                draw();
+                setTimeout(function(){draw();}, 1000);
                 return;
             } 
         }
