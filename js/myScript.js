@@ -4,26 +4,23 @@ var main = function(){
 
     var grid, count, n, inPlay, com, pla;
 
-
-
     $("#btn-player").click(function(){
-        inPlay = true;
         com = 'O';
         pla = 'X';
         init();
+        $("#text").show();
+        $("#gear").hide();
         $(".btn").hide();
-        rotate();
-        //turnMsg();
     })
 
     $("#btn-com").click(function(){
-        inPlay = true;
         com = 'X';
         pla = 'O';
         init();
+        $("#text").hide();
         $(".btn").hide();
-        rotate();
-        //place(initial());
+        inPlay = false;
+        place(initial());
     })
 
     $("td").click(function(){
@@ -31,26 +28,24 @@ var main = function(){
         if (inPlay && grid[Math.floor(id/n)][id%n] == ''){
             var cur = $(this);
             fill(cur);
-            gearMsg();
+            $("#text").hide();
             grid[Math.floor(id/n)][id%n] = pla;
             count++;
-
+            
             if (count==n*n) {
-                drawMsg();
-                endGame();
-            } 
-
+                draw();
+                return;
+            }
             var pos = -1;
             if (count >2 ) pos = traverse(id);
             else pos = initial();
 
-            //gearMsg();
-            place(pos);
-            turnMsg();
+            if (inPlay) place(pos);
 
-            if (count==n*n) {
-                drawMsg();
-                endGame();
+            if (count==n*n){
+                setTimeout(function()
+                           { draw(); }, 1000)
+                return;
             } 
         }
     })
@@ -85,7 +80,8 @@ var main = function(){
         $("td").text("");
         $("td").bind('mouseover', mouseOver).bind('mouseout', mouseOut);
         $("td").css("color", "black");
-        //$("#stats").text("");
+        $("#text").hide();
+        $("#text").html("Your turn, human.");
     }
 
     var initial = function(){
@@ -120,76 +116,60 @@ var main = function(){
         return index;
     }
 
+    var markHor = function(i, j){
+        for(var k=0;k<n;k++) mark(i*n+k);
+    }
+    
+    var markVer = function(i, j){
+        for(var k=0;k<n;k++) mark(k*n+j);
+    }
+
+    var markDiag = function(i, j){
+        for(var k=0;k<n;k++) mark(k*n+k);
+    }
+
+    var markRdiag = function(i, j){
+        for(var k=0;k<n;k++) mark(k*n+(n-1-k));
+    }
+
+
     var hor = function(i,j){
-        var countC = 0; countP = 0, p = 0;
+        var countC = 0; countP = 0;
         for(var k=0;k<n;k++) {
             if (grid[i][k]==com) countC++;
             else if (grid[i][k]==pla) countP++;
         }
-        p = points(countC, countP);
-        if (p==6){
-            for(var k=0;k<n;k++){
-                mark(i*n+k);
-            }
-            winMsg();
-            endGame();
-        }
-        return p;
+        return points(countC, countP);
     }
 
     var ver = function(i, j){
-        var countC = 0; countP = 0, p = 0;
+        var countC = 0; countP = 0;
         for(var k=0;k<n;k++) {
             if (grid[k][j]==com) countC++;
             else if (grid[k][j]==pla) countP++;
         }
-        p = points(countC, countP); 
-        if (p == 6) {
-            for(var k=0;k<n;k++){
-                mark(k*n+j);
-            }
-            winMsg();
-            endGame();
-        }
-        return p;
+        return points(countC, countP); 
     }
 
     var diag = function(i, j){
         if (i!=j) return 0;
-        var countC = 0; countP = 0, p = 0;
+        var countC = 0; countP = 0;
         for(var k=0;k<n;k++) {
             if (grid[k][k]==com) countC++;
             else if (grid[k][k]==pla) countP++;
         }
-        p = points(countC, countP);
-        if (p== 6){
-            for(var k=0;k<n;k++){
-                mark(k*n+k);
-            }
-            winMsg();
-            endGame();
-        }
-        return p;
+        return points(countC, countP);
     }
 
     var rdiag = function(i, j){
         if (i+j!=n-1) return 0;
-        var countC = 0; countP = 0, p = 0; 
+        var countC = 0; countP = 0; 
         for(var k=0;k<n;k++) {
             if (grid[k][n-1-k]==com) countC++;
             else if (grid[k][n-1-k]==pla) countP++;
         }
-        p = points(countC, countP);
-        if (p== 6){
-            for(var k=0;k<n;k++){
-                mark(k*n+(n-1-k));
-            }
-            winMsg();
-            endGame();
-        }
-        return p;
+        return points(countC, countP);
     }
-
 
     var mark = function(id){
         $("#" + id).css("color", "red");
@@ -200,16 +180,10 @@ var main = function(){
         $(".btn").show();
     }
 
-    var winMsg = function (){
-        $("#stats").html("Better luck next time.");
-    }
-
-    var drawMsg = function (){
-        $("#stats").html("Nobody wins.");
-    }
-
-    var turnMsg = function(){
-        $("#stats").html("Your turn, human.");
+    var draw = function(){
+        $("#text").html("Nobody wins.");
+        $("#text").show();
+        endGame();
     }
 
     var rotate = function(){
@@ -225,24 +199,59 @@ var main = function(){
     }
 
     var calc = function(i,j){
-        var points = 0, countP = 0, countC = 0;
+        var points = 0, countP = 0, countC = 0, p = 0;
 
-        points += hor(i, j);
-        points += ver(i, j);
-        points += diag(i, j);
-        points += rdiag(i, j);
+        p = hor(i,j);
+        if (p==6) { win(i,j,"hor")}
+        points += p;
+
+        p = ver(i,j);
+        if (p==6) { win(i, j,"ver")}
+        points +=p;
+
+        p = diag(i,j);
+        if (p==6) { win(i,j,"diag")}
+        points +=p;
+
+        p = rdiag(i,j);
+        if (p==6) { win(i,j,"rdiag")}
+        points +=p;
 
         return points;
     }
+
+    var win = function(i, j, from){
+        place(i*n+j);
+        setTimeout(function(){
+            switch(from){
+                case "hor": markHor(i,j); break;
+                case "ver": markVer(i,j); break;
+                case "diag": markDiag(i,j); break;
+                case "rdiag": markRdiag(i,j); break;
+            }
+            $("#gear").hide();
+            $("#text").html("I win.");
+            endGame();
+        },1001);
+    }
     
     var place = function(pos){
-        var cur = $("#" + pos);
-        grid[Math.floor(pos/n)][pos%n] = com;
-        cur.text(com);
-        cur.unbind('mouseover', mouseOver).unbind('mouseout', mouseOut);
+        $("#gear").show();
+        rotate();
+        inPlay = false;
+        setTimeout(function(){
+            var cur = $("#" + pos);
+            grid[Math.floor(pos/n)][pos%n] = com;
+            cur.text(com);
+            cur.css("color", "black");
+            cur.unbind('mouseover', mouseOver).unbind('mouseout', mouseOut);
+            $("#gear").hide();
+            $("#text").show();
+            inPlay = true;
+        }, 1000);
         count++;
-    }
 
+    }
 }
 
 $(document).ready(main);
